@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		#tb{
+			width: 800px;
+			border-collapse: collapse;
+			margin: 20px auto;
+		}
+		#tb th{
+			background-color: #0094ff;
+			color:white;
+			font-size: 16px;
+			padding: 5px;
+			text-align: center;
+			border: 1px solid black;
+		}
+		#tb td{
+		
+			padding: 5px;
+			text-align: center;
+			border: 1px solid black;
+		}
+	</style>
+	<script src="../vue1026.js"></script>
+</head>
+<body>
+	<div id="app">
+		<input type="text" name="" value="" v-model="pid">
+		<input type="text" v-model="pname">
+		<input type="button" value="添加数据" @click="add">
+		<input type="text" placeholder="请输入要查询的..." v-model="sname">
+		<table id="tb">
+			<tr>
+				<th>编号</th>
+				<th>名称</th>
+				<th>创建时间</th>
+				<th>操作</th>
+			</tr>
+			<tr v-if="list.length==0">
+				<td colspan="4">当前列表无数据</td>
+			</tr>
+			<tr v-for="item in list | filterBy sname in 'name'">
+				<td>{{item.id}}</td>
+				<td>{{item.name}}</td>
+				<td>{{item.ctime | datefmt 'yyyy-mm-dd HH:MM:SS'}}</td>
+				<td>
+					<!--<a href="javascript:void(0)" @click="del($index)">删除</a>-->
+					<a href="javascript:void(0)" @click="del(item.id)">删除</a>
+					
+				</td>
+			</tr>	
+		</table>
+	</div>
+</body>
+<script>
+Vue.filter('datefmt',function(input,formatstring){
+		var res= '';
+			var year = input.getFullYear();
+			var month = input.getMonth() + 1;
+			var day = input.getDate();
+			if(formatstring=='yyyy-mm-dd'){
+				res = year +'-' + month +'-'+ day;
+			}else{
+				res=year +'-' + month +'-'+ day+' 15:45:33'
+			}
+			
+			return res;
+})
+new Vue({
+	el:'#app',
+	data:{
+		list:[
+			{id:1,name:'奔驰',ctime:new Date()},
+			{id:2,name:'宝马',ctime:new Date()},
+			{id:3,name:'路虎',ctime:new Date()},
+			
+		],
+		pid:0,
+		pname:'',
+		sname:''
+	},
+	methods: {
+		add:function(){
+			this.list.push({id:this.pid,name:this.pname,ctime:new Date()})
+			this.pid=0
+			this.pname=''
+		},
+		//另一种实现方法，通过索引而不是ID
+		// del:function(id){
+		// 	if(!confirm('是否要删除数据？')){
+		// 		return;
+		// 	}
+		// 	this.list.splice(id,1)
+		// }
+		del:function(id){
+			if(!confirm('是否要删除数据？')){
+				return;
+			}
+			var index=this.list.findIndex(function(item){
+				return item.id==id;
+			})
+			this.list.splice(index,1);
+		}
+	}
+
+});
+</script>
+</html>
